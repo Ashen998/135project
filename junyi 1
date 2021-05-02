@@ -1,0 +1,27 @@
+```{r,echo = F}
+rawdata <- read.csv("C://Users//zhoug//Downloads//Birthweight_reduced_kg_R.csv")
+ncol(rawdata)
+
+#discarding categorical variable(I also discard the "ID" collumn as I think it can be meaningless)
+#(we can also drop the "length","head circumference" of babies and "gestation" if we want to discuss the effect mainly by smoking)
+#(or we can use them same as birthweight as a dependant variable)
+smbb = subset(rawdata,select = -c(ID,smoker,lowbwt,mage35)) 
+head(smbb)
+
+#Finding standing out individuals(outliers)
+par(mfrow = c(1,2))
+dotchart(smbb$Birthweight)
+pc = (boxplot(smbb$Birthweight,horizontal = T))
+pc$out
+#we have 0 outlier in the birthweight data
+#trying to use star plot
+stars(smbb)
+#we can discuss here which one seems different than the others
+
+#Using correlation matrix will standardize variables, so we tend to use it when variable scales are not silmilar.
+#On the contrary, when the scales are similar, we prefer the covariance one.
+pca1 = prcomp(smbb,scale = T)
+summary(pca1)
+biplot(pca1)
+#headcirc as pc1, and mnocig as pc2
+```
