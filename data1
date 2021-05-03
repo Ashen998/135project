@@ -9,19 +9,27 @@ smbb = subset(rawdata,select = -c(ID,smoker,lowbwt,mage35))
 head(smbb)
 
 #Finding standing out individuals(outliers)
-par(mfrow = c(1,2))
-dotchart(smbb$Birthweight)
-pc = (boxplot(smbb$Birthweight,horizontal = T))
-pc$out
-#we have 0 outlier in the birthweight data
-#trying to use star plot
+find_outliers <- function(input,cols = names(input)){
+  for(col in cols){
+    out = boxplot.stats(input[[col]])$out
+    print(col)
+    print(which(input[[col]] %in% out))
+  }
+}
+find_outliers(smbb)
+#the 3rd, 20th and 28th are outliers of Length;
+#the 20th and 27th are outliers of Gestation;
+#the 42nd, 35th and 36th are respectively outliers of mnocig, mheight and fage
+#Trying to use star plot
 stars(smbb)
-#we can discuss here which one seems different than the others
+#(we can discuss here which one seems different than the others)
 
 #Using correlation matrix will standardize variables, so we tend to use it when variable scales are not silmilar.
 #On the contrary, when the scales are similar, we prefer the covariance one.
+
 pca1 = prcomp(smbb,scale = T)
 summary(pca1)
+#we need at least 5 PCs to explain 80% of the data variance
 biplot(pca1)
-#headcirc as pc1, and mnocig as pc2
+#headcirc as PC1, and mnocig as PC2
 ```
