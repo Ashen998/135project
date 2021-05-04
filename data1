@@ -1,3 +1,7 @@
+---
+title: "135project"
+output: html_document
+---
 ```{r,echo = F}
 rawdata <- read.csv("C://Users//zhoug//Downloads//Birthweight_reduced_kg_R.csv")
 ncol(rawdata)
@@ -22,14 +26,30 @@ find_outliers(smbb)
 #the 42nd, 35th and 36th are respectively outliers of mnocig, mheight and fage
 #Trying to use star plot
 stars(smbb)
-#(we can discuss here which one seems different than the others)
+#the star plots have these outliers marked as well
 
 #Using correlation matrix will standardize variables, so we tend to use it when variable scales are not silmilar.
 #On the contrary, when the scales are similar, we prefer the covariance one.
 
 pca1 = prcomp(smbb,scale = T)
 summary(pca1)
+library(factoextra)
+#scree plot
+fviz_eig(pca1)
 #we need at least 5 PCs to explain 80% of the data variance
-biplot(pca1)
-#headcirc as PC1, and mnocig as PC2
+fviz_pca_biplot(pca1)
+#from the biplot, birthweight,gestation,length,mother's height are highly positively correlated; since these form nearly a 90 degree angle from father, mother's age, father's education level, they are not so correlated with each other. Also fathers' height seem to be highly negatively correlated with numbers of cigarettes smoked by mother as they form nearly a 180 degree angle. And the cigarettes smoked also negatively correlated with babies' status.
+
+#recording newdata
+newborn <- data.frame("Length"=61, "Birthweight"=5.1, "Headcirc"=36, "Gestation"=43, "mage"=43, "mnocig"=7, "mheight"=165, "mppwt"=64, "fage"=38, "fedyrs"=19, "fnocig"=45, "fheight"=189)
+
+#predicting using previous PCA
+pr1 <- predict(pca1, newdata = newborn)
+pr1[,1:5]
+
+options(max.overlaps = Inf)
+p <- fviz_pca_ind(pca1)
+#Add newborn individual
+fviz_add(p, pr1, color ="blue")
+#the new individual seem to be a extreme point away from the data crowd. As we can compare from the data, the new individual has his father,mother's age and cigarette smoked per day same as the maximum of the original data.
 ```
